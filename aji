@@ -1,0 +1,27 @@
+from DrissionPage import ChromiumPage, ChromiumOptions
+
+
+path = r'D:\Chrome\Chrome.exe'  # 请改为你电脑内Chrome可执行文件路径
+ChromiumOptions().set_browser_path(path).save()
+
+
+co = ChromiumOptions()
+url = 'https://service2.mom.gov.sg/workpass/enquiry/search'
+# co.set_proxy('http://127.0.0.1:7890')
+page = ChromiumPage(addr_or_opts=co)
+page.get(url)
+
+page.ele('x://button[@class="MomLanguage__Button"]').click()
+page.ele('x://span[text()="Start"]').click()
+page.ele('x://input[@id="search_date_of_birth_input"]').input('17/04/2000')  # 17/04/2000  24/03/1997
+page.ele('x://*[text()="Foreign Identification Number (FIN)"]').click()
+page.ele('x://input[@id="search_fin_input"]').input('M4400420P')  # M4400420P  M4476712T
+
+page.listen.start('get-foreigner')
+page.ele('x://span[text()="Submit"]').click()
+
+for packet in page.listen.steps():
+    if packet:
+        response = packet.response.body
+        print(response)
+        break
